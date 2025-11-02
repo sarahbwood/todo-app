@@ -1,7 +1,7 @@
 import time
 import os
 import psycopg2
-from flask import Flask, render_template
+from flask import Flask, render_template, request, url_for, redirect, jsonify
 
 app = Flask(__name__)
 
@@ -25,10 +25,17 @@ def get_todos():
     conn.close()
     return todoList
 
-# @app.post('/api/todos')
-#     def todo_post():
-#         conn = connect_to_db()
-#         cur = conn.cursor()
-#         cur.execute()
+@app.post('/api/todos')
+def todo_post():
+    title = request.form['title']
+    completed = request.form['completed']
+    # created_at = request.form['created_at']
+    user_id = request.form['user_id']
 
-#         return {todoList=todoList}
+    conn = connect_to_db()
+    cur = conn.cursor()
+    cur.execute('INSERT INTO todos (title, completed, created_at, user_id) VALUES (%s, %s, CURRENT_TIMESTAMP, %s)', (title, completed, user_id))
+    conn.commit()
+    cur.close()
+    conn.close()
+    return jsonify({"message": "ToDo posted successfully"}), 200
