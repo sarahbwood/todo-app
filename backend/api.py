@@ -78,3 +78,22 @@ def todo_patch(id):
     finally:
         cur.close()
         conn.close()
+
+@app.delete('/api/todos/<id>')
+def todo_delete(id):
+    try:
+        conn = connect_to_db()
+        cur = conn.cursor()
+        cur.execute('DELETE FROM todos WHERE id = %s', (id))
+        conn.commit()
+        return jsonify({'message': 'ToDo deleted successfully.'}), 200
+    
+    except psycopg2.Error as e:
+        return jsonify({'error' : 'A database error occurred: {e}'}), 500
+    
+    except Exception as e:
+        return jsonify({'error' : 'An error occurred: {e}'}), 500
+    
+    finally:
+        cur.close()
+        conn.close()
