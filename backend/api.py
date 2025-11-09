@@ -15,20 +15,55 @@ def connect_to_db():
     )
 
     return conn
+
 @app.post('/api/register')
 def register_user():
     username = request.form['username']
     password = request.form['password']
     
-    password_hash = bcrypt.generate_password_hash(password)
+    password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
     try:
         conn = connect_to_db()
         cur = conn.cursor()
-        cur.execute('INSERT INTO users (username, password) VALUES (%s, %s)', (username, password_hash))
+        cur.execute('INSERT INTO users (username, password) VALUES (%s, %s)', (username.lower(), password_hash))
         conn.commit()
         return jsonify({'message': 'User registered successfully.'}), 201
     
+    except psycopg2.Error as e:
+        return jsonify({'error' : f'A database error occurred: {e}'}), 500
+    
+    except Exception as e:
+        return jsonify({'error' : f'An error occurred: {e}'}), 500
+    
+    finally:
+        cur.close()
+        conn.close()
+
+@app.post('/api/login')
+def login_user():
+    username = request.form['username']
+    password = request.form['password']
+
+    try:
+        conn = connect_to_db()
+        cur = conn.cursor()
+        
+        # check if there is a user with this username in the db
+        cur.execute('SELECT row_to_json(u) FROM (SELECT id, username, password FROM users WHERE username = %s) u', (username.lower(),)) 
+               
+
+        if cur.rowcount == 0: 
+            return jsonify({'message': 'User not found'}), 404
+        else: 
+            user = cur.fetchone()[0] 
+            isCorrectPassword = bcrypt.check_password_hash(user['password'], password)
+
+            if isCorrectPassword:
+                return jsonify({'message': 'Logged in successfully.'}), 200
+            else:
+                return jsonify({'message': 'Incorrect password.'}), 401
+
     except psycopg2.Error as e:
         return jsonify({'error' : f'A database error occurred: {e}'}), 500
     
