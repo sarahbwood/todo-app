@@ -29,9 +29,25 @@ def register_user():
     try:
         conn = connect_to_db()
         cur = conn.cursor()
-        cur.execute('INSERT INTO users (username, password) VALUES (%s, %s)', (username.lower(), password_hash))
+        cur.execute('INSERT INTO users (username, password) VALUES (%s, %s) RETURNING id, username', (username.lower(), password_hash))
+        result = cur.fetchone()
         conn.commit()
-        return jsonify({'message': 'User registered successfully.'}), 201
+
+        user = {
+            'id': result[0],
+            'username': result[1],
+        }
+        
+        access_token = create_access_token(identity=str(user['id']), additional_claims={'username': user['username']})
+        
+        data = {
+            'message': 'User registered successfully.',
+            'user_id': user['id'],
+            'username': user['username'],   
+            'access_token': access_token,
+        }
+        
+        return jsonify(data), 201
     
     except psycopg2.Error as e:
         return jsonify({'error' : f'A database error occurred: {e}'}), 500
