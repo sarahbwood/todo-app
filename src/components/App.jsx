@@ -9,6 +9,7 @@ function App() {
   const [user, setUser] = useState({
     userId: "",
     username: "",
+    accessToken: "",
   });
 
   return (
@@ -17,7 +18,7 @@ function App() {
 
       {!isLoggedIn && <Login onLogin={setIsLoggedIn} setUser={setUser}/>}
 
-      {isLoggedIn && <ToDoList  userId={user.userId}/>}
+      {isLoggedIn && <ToDoList  userId={user.userId} accessToken={user.accessToken} />}
     </>
   );
 }

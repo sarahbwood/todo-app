@@ -2,11 +2,12 @@ import os
 import psycopg2
 from flask import Flask, render_template, request, url_for, redirect, jsonify
 from flask_bcrypt import Bcrypt
-from authlib.integrations.flask_client import OAuth
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
-oauth = OAuth(app)
+app.config["JWT_SECRET_KEY"] = os.environ["JWT_SECRET_KEY"]
+jwt = JWTManager(app)
 
 def connect_to_db():
     conn = psycopg2.connect(
@@ -57,14 +58,18 @@ def login_user():
         if cur.rowcount == 0: 
             return jsonify({'message': 'User not found'}), 404
         else: 
+            # validate password using Bcrypt
             user = cur.fetchone()[0] 
             isCorrectPassword = bcrypt.check_password_hash(user['password'], password)
 
             if isCorrectPassword:
+                access_token = create_access_token(identity=str(user['id']), additional_claims={'username': user['username']})
+
                 data = {
                     'message': 'Logged in successfully.',
                     'user_id':  user['id'],
-                    'username': user['username']                   
+                    'username': user['username'],
+                    'access_token': access_token,
                 }
 
                 return jsonify(data), 200
@@ -82,11 +87,14 @@ def login_user():
         conn.close()
 
 @app.get('/api/todos')
+@jwt_required()
 def get_todos():
+    validated_user_id = get_jwt_identity()
+
     try:
         conn = connect_to_db()
         cur = conn.cursor()
-        cur.execute('SELECT row_to_json(t) FROM (SELECT id, title, completed, created_at, user_id FROM todos ORDER BY created_at ASC ) t') 
+        cur.execute('SELECT row_to_json(t) FROM (SELECT id, title, completed, created_at, user_id FROM todos WHERE user_id = %s ORDER BY created_at ASC ) t', (validated_user_id,)) 
         todoList = cur.fetchall()
         
         return jsonify(todoList), 200

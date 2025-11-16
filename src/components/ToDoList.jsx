@@ -7,10 +7,22 @@ function ToDoList(props) {
   const [todoList, setTodoList] = useState([]);
 
   function getTodoList() {
-    axios
+    const axiosInstance = axios.create();
+    axiosInstance.interceptors.request.use(
+      (config) => {
+        const token = props.accessToken;
+        if(token){
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+      }, (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    axiosInstance
       .get("/api/todos")
       .then((response) => {
-        console.log(response);
         if (response.status === 200) {
           setTodoList(response.data);
         }

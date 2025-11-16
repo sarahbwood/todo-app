@@ -40,6 +40,7 @@ function Login(props) {
           props.setUser({
             userId: response.data.user_id,
             username: response.data.username,
+            accessToken: response.data.access_token,
           });
         }
       })
