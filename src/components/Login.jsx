@@ -18,6 +18,10 @@ function Login(props) {
     });
   }
 
+  function setIsNotRegistered() {
+    props.setIsRegistered(false);
+  }
+
   function authenticateUser(e) {
     e.preventDefault();
     axios
@@ -70,6 +74,8 @@ function Login(props) {
         <br />
         <button type="submit">Login</button>
       </form>
+
+      <p onClick={setIsNotRegistered}>No account? No problem! Register here.</p>
     </>
   );
 }
