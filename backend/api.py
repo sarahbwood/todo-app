@@ -2,9 +2,11 @@ import os
 import psycopg2
 from flask import Flask, render_template, request, url_for, redirect, jsonify
 from flask_bcrypt import Bcrypt
+from authlib.integrations.flask_client import OAuth
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
+oauth = OAuth(app)
 
 def connect_to_db():
     conn = psycopg2.connect(
@@ -52,7 +54,6 @@ def login_user():
         # check if there is a user with this username in the db
         cur.execute('SELECT row_to_json(u) FROM (SELECT id, username, password FROM users WHERE username = %s) u', (username.lower(),)) 
                
-
         if cur.rowcount == 0: 
             return jsonify({'message': 'User not found'}), 404
         else: 
@@ -60,7 +61,13 @@ def login_user():
             isCorrectPassword = bcrypt.check_password_hash(user['password'], password)
 
             if isCorrectPassword:
-                return jsonify({'message': 'Logged in successfully.'}), 200
+                data = {
+                    'message': 'Logged in successfully.',
+                    'user_id':  user['id'],
+                    'username': user['username']                   
+                }
+
+                return jsonify(data), 200
             else:
                 return jsonify({'message': 'Incorrect password.'}), 401
 
@@ -79,10 +86,10 @@ def get_todos():
     try:
         conn = connect_to_db()
         cur = conn.cursor()
-        cur.execute('SELECT row_to_json(t) FROM (SELECT id, title, completed, created_at, user_id FROM todos) t') 
+        cur.execute('SELECT row_to_json(t) FROM (SELECT id, title, completed, created_at, user_id FROM todos ORDER BY created_at ASC ) t') 
         todoList = cur.fetchall()
         
-        return todoList
+        return jsonify(todoList), 200
     
     except psycopg2.Error as e:
         return jsonify({'error' : f'A database error occurred: {e}'}), 500
@@ -95,15 +102,14 @@ def get_todos():
         conn.close()
 
 @app.post('/api/todos')
-def post_post():
+def post_():
     title = request.form['title']
-    completed = request.form['completed']
     user_id = request.form['user_id']
 
     try:
         conn = connect_to_db()
         cur = conn.cursor()
-        cur.execute('INSERT INTO todos (title, completed, created_at, user_id) VALUES (%s, %s, CURRENT_TIMESTAMP, %s)', (title, completed, user_id))
+        cur.execute('INSERT INTO todos (title, completed, created_at, user_id) VALUES (%s, FALSE, CURRENT_TIMESTAMP, %s)', (title, user_id))
         conn.commit()
         return jsonify({'message': 'ToDo posted successfully.'}), 201
     
@@ -144,7 +150,7 @@ def delete_todo(id):
     try:
         conn = connect_to_db()
         cur = conn.cursor()
-        cur.execute('DELETE FROM todos WHERE id = %s', (id))
+        cur.execute('DELETE FROM todos WHERE id = %s', (id,))
         conn.commit()
         return jsonify({'message': 'ToDo deleted successfully.'}), 200
     

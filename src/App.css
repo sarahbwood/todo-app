@@ -9,10 +9,16 @@
   padding: 2em;
 }
 
-h1 {
+h1, h2 {
   font-family: Montserrat;
 }
 
 form{
   margin-top: 2em;
+}
+
+input{
+  font-family: Montserrat;
+  font-size: 1.2em;
+  margin: 0.3em;
 }

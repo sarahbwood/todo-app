@@ -1,30 +1,24 @@
 import { useState, useEffect } from "react";
 import Header from "./Header.jsx";
+import Login from "./Login.jsx";
 import ToDoList from "./ToDoList.jsx";
 import "../App.css";
 
 function App() {
-  const [todoList, setTodoList] = useState([]);
-
-  useEffect(() => {
-    fetch("api/todos")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setTodoList(data);
-      });
-  }, []);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState({
+    userId: "",
+    username: "",
+  });
 
   return (
-    <div>
-      <Header />
-      <ToDoList listItems={todoList} />
+    <>
+      <Header isLoggedIn={isLoggedIn} user={user}/>
 
-      <form action="/api/todos/">
-        <input type="text" name="newToDo"></input>
-        <input type="submit" value="Add" />
-      </form>
-    </ div>
+      {!isLoggedIn && <Login onLogin={setIsLoggedIn} setUser={setUser}/>}
+
+      {isLoggedIn && <ToDoList  userId={user.userId}/>}
+    </>
   );
 }
 
