@@ -91,7 +91,7 @@ def login_user():
                 return jsonify(data), 200
             else:
                 return jsonify({'message': 'Incorrect password.'}), 401
-
+            
     except psycopg2.Error as e:
         return jsonify({'error' : f'A database error occurred: {e}'}), 500
     
@@ -101,6 +101,7 @@ def login_user():
     finally:
         cur.close()
         conn.close()
+        
 
 @app.get('/api/todos')
 @jwt_required()
