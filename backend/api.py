@@ -11,7 +11,7 @@ jwt = JWTManager(app)
 
 def connect_to_db():
     conn = psycopg2.connect(
-        host="localhost",
+        host="db",
         database="todo_db",
         user=os.environ['DB_USERNAME'],
         password=os.environ['DB_PASSWORD']
@@ -26,9 +26,10 @@ def register_user():
     
     password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
+    conn = connect_to_db()
+    cur = conn.cursor()
+    
     try:
-        conn = connect_to_db()
-        cur = conn.cursor()
         cur.execute('INSERT INTO users (username, password) VALUES (%s, %s) RETURNING id, username', (username.lower(), password_hash))
         result = cur.fetchone()
         conn.commit()

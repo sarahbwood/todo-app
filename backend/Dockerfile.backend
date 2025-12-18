@@ -1,9 +1,12 @@
 FROM python:3.13.3-slim
 WORKDIR /app
-COPY backend/requirements.txt backend/api.py ./
+COPY ./requirements.txt ./api.py ./
 RUN pip install -r requirements.txt
 ENV FLASK_ENV=development
 ENV FLASK_APP=api.py
+ENV JWT_SECRET_KEY="my-secret-key"
+ENV DB_USERNAME="postgres"
+ENV DB_PASSWORD="test@123"
 
 EXPOSE 8000
 CMD ["flask", "run", "--host=0.0.0.0", "--port=8000"]
