@@ -23,6 +23,7 @@ services:
     ports: 
       - "5432:5432"
     volumes:
+      - ./seed_todo_db.sql:/docker-entrypoint-initdb.d/seed_todo_db.sql
       - pgdata:/var/lib/postgresql/data
   pgadmin:
     image: dpage/pgadmin4

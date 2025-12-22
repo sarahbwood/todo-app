@@ -3,4 +3,4 @@
 # Tech Stack
 * React Frontend
 * Flask Backend
-* Postgresql Database
+* PostgreSQL Database
