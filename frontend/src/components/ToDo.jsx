@@ -2,6 +2,8 @@ import { useState } from "react";
 import { ListItem, ListItemText, IconButton, Checkbox } from "@mui/material";
 import { DeleteOutlined, EditOutlined } from "@mui/icons-material";
 import axios from "axios";
+import Swal from "sweetalert2";
+import "sweetalert2/themes/material-ui.css";
 
 function ToDo(props) {
   const [todo, setTodo] = useState({
@@ -44,16 +46,27 @@ function ToDo(props) {
   }
 
   function deleteTodo() {
-    axios
-      .delete(`api/todos/${todo.id}`)
-      .then((response) => {
-        if (response.status === 200) {
-          props.refreshTodoList();
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    Swal.fire({
+      title: "Are you sure you want to delete this?",
+      theme: "material-ui",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`api/todos/${todo.id}`)
+          .then((response) => {
+            if (response.status === 200) {
+              props.refreshTodoList();
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    });
   }
 
   return (
