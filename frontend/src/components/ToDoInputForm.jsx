@@ -23,8 +23,6 @@ function ToDoInputForm(props) {
         }
       )
       .then((response) => {
-        console.log(response);
-
         if (response.status === 201) {
           setTitle("");
           props.refreshTodoList();
