@@ -25,3 +25,22 @@ input{
   margin: 0.3em;
 }
 
+.MuiButtonBase-root{
+  color: #ffffffde;
+}
+
+.MuiCheckbox-root{
+  color: #ffffffde;
+}
+
+.MuiCheckbox-root:checked{
+  color: #ffffffde;
+}
+
+p {
+  color: #646cff;
+}
+
+p:hover {
+  color: #560bfa; 
+}

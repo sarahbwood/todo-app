@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { List } from '@mui/material';
 import axios from "axios";
 import ToDo from "./ToDo.jsx";
 import ToDoInputForm from "./ToDoInputForm.jsx";
@@ -38,7 +39,8 @@ function ToDoList(props) {
 
   return (
     <>
-      {todoList.map((toDo) => (
+      <List>
+       {todoList.map((toDo) => (
         <ToDo
           key={toDo[0].id}
           title={toDo[0].title}
@@ -47,6 +49,8 @@ function ToDoList(props) {
           refreshTodoList={getTodoList}
         />
       ))}
+      </List>
+   
       <ToDoInputForm userId={props.userId} refreshTodoList={getTodoList} />
     </>
   );

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { ListItem, ListItemText, IconButton, Checkbox } from '@mui/material';
+import { DeleteOutlined, EditOutlined } from '@mui/icons-material';
 import axios from "axios";
 
 function ToDo(props) {
@@ -41,14 +43,12 @@ function ToDo(props) {
   }
 
   return (
-    <div>
-      <label>{todo.title}</label>
-      <input
-        type="checkbox"
-        checked={todo.completed}
-        onChange={updateCompletedStatus}
-      />
-    </div>
+    <ListItem>
+      <ListItemText primary={todo.title}/>
+      <Checkbox checked={todo.completed} onChange={updateCompletedStatus}/>
+      <IconButton edge="end"><EditOutlined/></IconButton>
+      <IconButton edge="end"><DeleteOutlined/></IconButton>
+    </ListItem>
   );
 }
 
