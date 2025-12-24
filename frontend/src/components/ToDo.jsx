@@ -69,11 +69,55 @@ function ToDo(props) {
     });
   }
 
+  function editTodo() {
+    Swal.fire({
+      title: "Edit",
+      theme: "material-ui",
+      input: "text",
+      inputValue: todo.title,
+      showCancelButton: true,
+      confirmButtonText: "Save Changes",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setTodo((prevTodo) => {
+          return {
+            ...prevTodo,
+            title: result.value,
+          };
+        });
+
+        axios
+          .patch(
+            `/api/todos/${todo.id}`,
+            {
+              title: todo.title,
+              completed: todo.completed,
+            },
+            {
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+            }
+          )
+          .then((response) => {
+            console.log(response);
+            if (response.status === 200) {
+              props.refreshTodoList();
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    });
+  }
+
   return (
     <ListItem>
       <ListItemText primary={todo.title} />
       <Checkbox checked={todo.completed} onChange={updateCompletedStatus} />
-      <IconButton edge="end">
+      <IconButton edge="end" onClick={editTodo}>
         <EditOutlined />
       </IconButton>
       <IconButton edge="end" onClick={deleteTodo}>
