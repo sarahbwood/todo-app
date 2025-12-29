@@ -1,9 +1,28 @@
+body{
+ margin: 0;
+}
+
 #root {
-  max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
   font-family: Montserrat;
+  font-weight: 400;
+  line-height: 1.5;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+}
+
+.content {
+  margin-top: 1em;
+  display: flex;
+  flex-direction: column;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
 }
 
 .card {
@@ -15,32 +34,34 @@ h1 {
   line-height: 1.1;
 }
 
-form{
+form {
   margin-top: 2em;
+  text-align: center;
 }
 
-input{
+input {
   font-family: Montserrat;
   font-size: 1.2em;
   margin: 0.3em;
 }
 
-.MuiButtonBase-root{
+.MuiButtonBase-root {
   color: #ffffffde;
 }
 
-.MuiCheckbox-root{
+.MuiCheckbox-root {
   color: #ffffffde;
 }
 
-.MuiCheckbox-root:checked{
+.MuiCheckbox-root:checked {
   color: #ffffffde;
 }
 
 p {
   color: #646cff;
+  font-weight: 500;
 }
 
 p:hover {
-  color: #560bfa; 
+  color: #560bfa;
 }

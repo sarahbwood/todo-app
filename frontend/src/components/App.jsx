@@ -3,7 +3,7 @@ import Header from "./Header.jsx";
 import Login from "./Login.jsx";
 import Register from "./Register.jsx";
 import ToDoList from "./ToDoList.jsx";
-import { StyledEngineProvider } from '@mui/material/styles';
+import { StyledEngineProvider } from "@mui/material/styles";
 import "../App.css";
 
 function App() {
@@ -17,12 +17,28 @@ function App() {
 
   return (
     <StyledEngineProvider injectFirst>
-      <Header isLoggedIn={isLoggedIn} user={user}/>
+      <Header isLoggedIn={isLoggedIn} user={user} />
 
-      {(!isLoggedIn && isRegistered) && <Login onLogin={setIsLoggedIn} setUser={setUser} setIsRegistered={setIsRegistered} />}
-      {(!isLoggedIn && !isRegistered) && <Register onRegistration={setIsRegistered} onLogin={setIsLoggedIn} setUser={setUser} />}
+      <div className="content">
+        {!isLoggedIn && isRegistered && (
+          <Login
+            onLogin={setIsLoggedIn}
+            setUser={setUser}
+            setIsRegistered={setIsRegistered}
+          />
+        )}
+        {!isLoggedIn && !isRegistered && (
+          <Register
+            onRegistration={setIsRegistered}
+            onLogin={setIsLoggedIn}
+            setUser={setUser}
+          />
+        )}
 
-      {isLoggedIn && <ToDoList  userId={user.userId} accessToken={user.accessToken} />}
+        {isLoggedIn && (
+          <ToDoList userId={user.userId} accessToken={user.accessToken} />
+        )}
+      </div>
     </StyledEngineProvider>
   );
 }
