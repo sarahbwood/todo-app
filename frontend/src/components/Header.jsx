@@ -3,7 +3,7 @@ import LogoImage from "../assets/images/list.png";
 
 function Header(props) {
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" color="transparent" elevation={0} sx={{backdropFilter:  "blur(25px)"}}> 
       <Toolbar sx={{ justifyContent: "space-between" }}>
         <img src={LogoImage} alt="To Do List Logo" height="50px" />
         <Typography

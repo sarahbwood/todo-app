@@ -4,7 +4,6 @@ import Login from "./Login.jsx";
 import Register from "./Register.jsx";
 import ToDoList from "./ToDoList.jsx";
 import { StyledEngineProvider } from "@mui/material/styles";
-import "../App.css";
 
 function App() {
   const [isRegistered, setIsRegistered] = useState(true);
@@ -39,6 +38,16 @@ function App() {
           <ToDoList userId={user.userId} accessToken={user.accessToken} />
         )}
       </div>
+      <p>
+        Photo by{" "}
+        <a href="https://unsplash.com/@codioful?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">
+          Codioful (Formerly Gradienta)
+        </a>{" "}
+        on{" "}
+        <a href="https://unsplash.com/photos/pink-and-yellow-color-illustration-1TCjZz-dnJc?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">
+          Unsplash
+        </a>
+      </p>
     </StyledEngineProvider>
   );
 }
