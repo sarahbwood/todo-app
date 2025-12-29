@@ -6,6 +6,8 @@ services:
     image: todo-frontend:latest
     ports:
       - "3000:3000"
+    depends_on:
+      - backend
   backend:
     build:
       context: ./backend
@@ -13,6 +15,8 @@ services:
     image: todo-backend:latest
     ports:
       - "8000:8000"
+    depends_on:
+      - db
   db: 
     image: postgres:15
     restart: always

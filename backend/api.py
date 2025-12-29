@@ -65,10 +65,10 @@ def login_user():
     username = request.form['username']
     password = request.form['password']
 
+    conn = connect_to_db()
+    cur = conn.cursor()
+    
     try:
-        conn = connect_to_db()
-        cur = conn.cursor()
-        
         # check if there is a user with this username in the db
         cur.execute('SELECT row_to_json(u) FROM (SELECT id, username, password FROM users WHERE username = %s) u', (username.lower(),)) 
                
@@ -103,15 +103,15 @@ def login_user():
         cur.close()
         conn.close()
         
-
 @app.get('/api/todos')
 @jwt_required()
 def get_todos():
     validated_user_id = get_jwt_identity()
-
+    
+    conn = connect_to_db()
+    cur = conn.cursor()
+    
     try:
-        conn = connect_to_db()
-        cur = conn.cursor()
         cur.execute('SELECT row_to_json(t) FROM (SELECT id, title, completed, created_at, user_id FROM todos WHERE user_id = %s ORDER BY created_at ASC ) t', (validated_user_id,)) 
         todoList = cur.fetchall()
         
@@ -128,13 +128,14 @@ def get_todos():
         conn.close()
 
 @app.post('/api/todos')
-def post_():
+def post_todos():
     title = request.form['title']
     user_id = request.form['user_id']
 
+    conn = connect_to_db()
+    cur = conn.cursor()
+    
     try:
-        conn = connect_to_db()
-        cur = conn.cursor()
         cur.execute('INSERT INTO todos (title, completed, created_at, user_id) VALUES (%s, FALSE, CURRENT_TIMESTAMP, %s)', (title, user_id))
         conn.commit()
         return jsonify({'message': 'ToDo posted successfully.'}), 201
@@ -154,9 +155,10 @@ def patch_todo(id):
     title = request.form['title']
     completed = request.form['completed']
 
+    conn = connect_to_db()
+    cur = conn.cursor()
+    
     try:
-        conn = connect_to_db()
-        cur = conn.cursor()
         cur.execute('UPDATE todos SET title = %s, completed = %s WHERE id = %s', (title, completed, id))
         conn.commit()
         return jsonify({'message': 'ToDo updated successfully.'}), 200
@@ -173,9 +175,10 @@ def patch_todo(id):
 
 @app.delete('/api/todos/<id>')
 def delete_todo(id):
+    conn = connect_to_db()
+    cur = conn.cursor()
+    
     try:
-        conn = connect_to_db()
-        cur = conn.cursor()
         cur.execute('DELETE FROM todos WHERE id = %s', (id,))
         conn.commit()
         return jsonify({'message': 'ToDo deleted successfully.'}), 200

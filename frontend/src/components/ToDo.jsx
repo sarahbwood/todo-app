@@ -26,7 +26,7 @@ function ToDo(props) {
         `/api/todos/${todo.id}`,
         {
           title: todo.title,
-          completed: todo.completed,
+          completed: isCompleted,
         },
         {
           headers: {
@@ -91,7 +91,7 @@ function ToDo(props) {
           .patch(
             `/api/todos/${todo.id}`,
             {
-              title: todo.title,
+              title: result.value,
               completed: todo.completed,
             },
             {
