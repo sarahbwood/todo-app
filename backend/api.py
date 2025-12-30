@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = os.environ["JWT_SECRET_KEY"]
 app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
 app.config["JWT_COOKIE_SECURE"] = False
+app.config["JWT_COOKIE_CSRF_PROTECT"] = True
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
@@ -42,15 +43,15 @@ def register_user():
         }
         
         access_token = create_access_token(identity=str(user['id']), additional_claims={'username': user['username']})
-        
-        data = {
+        data = jsonify({
             'message': 'User registered successfully.',
             'user_id': user['id'],
             'username': user['username'],   
             'access_token': access_token,
-        }
+        })
+        set_access_cookies(data, access_token)
         
-        return jsonify(data), 201
+        return data, 201
     
     except psycopg2.Error as e:
         return jsonify({'error' : f'A database error occurred: {e}'}), 500
@@ -178,6 +179,7 @@ def patch_todo(id):
         conn.close()
 
 @app.delete('/api/todos/<id>')
+@jwt_required()
 def delete_todo(id):
     conn = connect_to_db()
     cur = conn.cursor()
