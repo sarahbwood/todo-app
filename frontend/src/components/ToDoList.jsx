@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { List } from '@mui/material';
+import { List } from "@mui/material";
 import axios from "axios";
 import ToDo from "./ToDo.jsx";
 import ToDoInputForm from "./ToDoInputForm.jsx";
@@ -12,11 +12,14 @@ function ToDoList(props) {
     axiosInstance.interceptors.request.use(
       (config) => {
         const token = props.accessToken;
-        if(token){
+
+        if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
+
         return config;
-      }, (error) => {
+      },
+      (error) => {
         return Promise.reject(error);
       }
     );
@@ -40,18 +43,21 @@ function ToDoList(props) {
   return (
     <>
       <List>
-       {todoList.map((toDo) => (
-        <ToDo
-          key={toDo[0].id}
-          title={toDo[0].title}
-          completed={toDo[0].completed}
-          id={toDo[0].id}
-          refreshTodoList={getTodoList}
-        />
-      ))}
+        {todoList.map((toDo) => (
+          <ToDo
+            key={toDo[0].id}
+            title={toDo[0].title}
+            completed={toDo[0].completed}
+            id={toDo[0].id}
+            refreshTodoList={getTodoList}
+          />
+        ))}
       </List>
-   
-      <ToDoInputForm userId={props.userId} refreshTodoList={getTodoList} />
+
+      <ToDoInputForm
+        refreshTodoList={getTodoList}
+        accessToken={props.accessToken}
+      />
     </>
   );
 }

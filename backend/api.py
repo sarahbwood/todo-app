@@ -2,11 +2,11 @@ import os
 import psycopg2
 from flask import Flask, render_template, request, url_for, redirect, jsonify
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager, set_access_cookies, unset_jwt_cookies
 
 app = Flask(__name__)
-bcrypt = Bcrypt(app)
 app.config["JWT_SECRET_KEY"] = os.environ["JWT_SECRET_KEY"]
+bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
 def connect_to_db():
@@ -128,15 +128,16 @@ def get_todos():
         conn.close()
 
 @app.post('/api/todos')
+@jwt_required()
 def post_todos():
+    validated_user_id = get_jwt_identity()
     title = request.form['title']
-    user_id = request.form['user_id']
 
     conn = connect_to_db()
     cur = conn.cursor()
     
     try:
-        cur.execute('INSERT INTO todos (title, completed, created_at, user_id) VALUES (%s, FALSE, CURRENT_TIMESTAMP, %s)', (title, user_id))
+        cur.execute('INSERT INTO todos (title, completed, created_at, user_id) VALUES (%s, FALSE, CURRENT_TIMESTAMP, %s)', (title, validated_user_id))
         conn.commit()
         return jsonify({'message': 'ToDo posted successfully.'}), 201
     

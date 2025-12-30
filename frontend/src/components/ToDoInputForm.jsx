@@ -11,12 +11,28 @@ function ToDoInputForm(props) {
 
   function addTodo(e) {
     e.preventDefault();
-    axios
+
+    const axiosInstance = axios.create();
+    axiosInstance.interceptors.request.use(
+      (config) => {
+        const token = props.accessToken;
+
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
+
+    axiosInstance
       .post(
         "/api/todos",
         {
           title: title,
-          user_id: e.target.user_id.value,
         },
         {
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -40,7 +56,6 @@ function ToDoInputForm(props) {
         value={title}
         onChange={handleChange}
       ></input>
-      <input type="hidden" name="user_id" value={props.userId} />
       <input type="submit" value="Add" />
     </form>
   );
