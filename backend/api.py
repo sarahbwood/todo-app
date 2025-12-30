@@ -6,7 +6,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = os.environ["JWT_SECRET_KEY"]
-app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
+app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_COOKIE_SECURE"] = False
 app.config["JWT_COOKIE_CSRF_PROTECT"] = True
 bcrypt = Bcrypt(app)
@@ -45,7 +45,6 @@ def register_user():
         access_token = create_access_token(identity=str(user['id']), additional_claims={'username': user['username']})
         data = jsonify({
             'message': 'User registered successfully.',
-            'user_id': user['id'],
             'username': user['username'],   
             'access_token': access_token,
         })
@@ -86,7 +85,6 @@ def login_user():
                 access_token = create_access_token(identity=str(user['id']), additional_claims={'username': user['username']})
                 data = jsonify({
                     'message': 'Logged in successfully.',
-                    'user_id':  user['id'],
                     'username': user['username'],
                     'access_token': access_token,
                 })

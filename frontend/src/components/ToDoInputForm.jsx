@@ -4,6 +4,10 @@ import axios from "axios";
 function ToDoInputForm(props) {
   const [title, setTitle] = useState("");
 
+  axios.defaults.withCredentials = true;
+  axios.defaults.xsrfCookieName = "csrf_access_token";
+  axios.defaults.xsrfHeaderName = "X-CSRF-TOKEN";
+
   function handleChange(e) {
     const newTitle = e.target.value;
     setTitle(newTitle);
@@ -12,23 +16,7 @@ function ToDoInputForm(props) {
   function addTodo(e) {
     e.preventDefault();
 
-    const axiosInstance = axios.create();
-    axiosInstance.interceptors.request.use(
-      (config) => {
-        const token = props.accessToken;
-
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    );
-
-    axiosInstance
+    axios
       .post(
         "/api/todos",
         {

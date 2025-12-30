@@ -9,7 +9,6 @@ function App() {
   const [isRegistered, setIsRegistered] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState({
-    userId: "",
     username: "",
     accessToken: "",
   });
@@ -35,7 +34,7 @@ function App() {
         )}
 
         {isLoggedIn && (
-          <ToDoList userId={user.userId} accessToken={user.accessToken} />
+          <ToDoList userId={user.userId} />
         )}
       </div>
       <p>

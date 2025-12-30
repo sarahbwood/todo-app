@@ -7,24 +7,12 @@ import ToDoInputForm from "./ToDoInputForm.jsx";
 function ToDoList(props) {
   const [todoList, setTodoList] = useState([]);
 
+  axios.defaults.withCredentials = true;
+  axios.defaults.xsrfCookieName = "csrf_access_token";
+  axios.defaults.xsrfHeaderName = "X-CSRF-TOKEN";
+
   function getTodoList() {
-    const axiosInstance = axios.create();
-    axiosInstance.interceptors.request.use(
-      (config) => {
-        const token = props.accessToken;
-
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    );
-
-    axiosInstance
+    axios
       .get("/api/todos")
       .then((response) => {
         if (response.status === 200) {
@@ -56,7 +44,6 @@ function ToDoList(props) {
 
       <ToDoInputForm
         refreshTodoList={getTodoList}
-        accessToken={props.accessToken}
       />
     </>
   );
