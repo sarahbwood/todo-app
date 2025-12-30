@@ -12,6 +12,10 @@ function ToDo(props) {
     id: props.id,
   });
 
+  axios.defaults.withCredentials = true;
+  axios.defaults.xsrfCookieName = "csrf_access_token";
+  axios.defaults.xsrfHeaderName = "X-CSRF-TOKEN";
+
   function updateCompletedStatus(e) {
     const isCompleted = e.target.checked;
     setTodo((prevTodo) => {

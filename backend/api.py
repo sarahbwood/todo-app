@@ -1,11 +1,13 @@
 import os
 import psycopg2
-from flask import Flask, render_template, request, url_for, redirect, jsonify
+from flask import Flask, request, url_for, redirect, jsonify
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager, set_access_cookies, unset_jwt_cookies
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = os.environ["JWT_SECRET_KEY"]
+app.config["JWT_TOKEN_LOCATION"] = ["headers", "cookies"]
+app.config["JWT_COOKIE_SECURE"] = False
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
@@ -81,15 +83,15 @@ def login_user():
 
             if isCorrectPassword:
                 access_token = create_access_token(identity=str(user['id']), additional_claims={'username': user['username']})
-
-                data = {
+                data = jsonify({
                     'message': 'Logged in successfully.',
                     'user_id':  user['id'],
                     'username': user['username'],
                     'access_token': access_token,
-                }
+                })
+                set_access_cookies(data, access_token)
 
-                return jsonify(data), 200
+                return data, 200
             else:
                 return jsonify({'message': 'Incorrect password.'}), 401
             
@@ -152,6 +154,7 @@ def post_todos():
         conn.close()
     
 @app.patch('/api/todos/<id>')
+@jwt_required()
 def patch_todo(id):
     title = request.form['title']
     completed = request.form['completed']
