@@ -118,6 +118,12 @@ def login_user():
     finally:
         cur.close()
         conn.close()
+
+@app.post('/api/logout')
+def logout_user():
+    data = jsonify({'message': 'User logged out successfully.'})
+    unset_jwt_cookies(data)
+    return data, 200
         
 @app.get('/api/todos')
 @jwt_required()
