@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -10,6 +11,17 @@ import { AccountCircleOutlined } from "@mui/icons-material";
 import LogoImage from "../assets/images/list.png";
 
 function Header(props) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+
+  const handleMenuClick = (e) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <AppBar
       position="sticky"
@@ -27,9 +39,37 @@ function Header(props) {
           To Do List
         </Typography>
         {props.isLoggedIn && (
-          <IconButton size="large">
-            <AccountCircleOutlined fontSize="large" />
-          </IconButton>
+          <div>
+            <IconButton
+              id="menu-button"
+              size="large"
+              aria-controls={openMenu ? "profile-menu" : undefined}
+              aria-haspopup="true"
+              aria-expanded={openMenu ? "true" : undefined}
+              onClick={handleMenuClick}
+            >
+              <AccountCircleOutlined fontSize="large" />
+            </IconButton>
+            <Menu
+              id="profile-menu"
+              anchorEl={anchorEl}
+              open={openMenu}
+              onClose={handleMenuClose}
+              slotProps={{
+                list: {
+                  "aria-labelledby": "menu-button",
+                },
+              }}
+              sx={{
+                "& .MuiPaper-root": {
+                  backgroundColor: "#7f4211",
+                  minWidth: "120px",
+                },
+              }}
+            >
+              <MenuItem>Logout</MenuItem>
+            </Menu>
+          </div>
         )}
         <Typography variant="h5" component="div" sx={{ textAlign: "right" }}>
           {props.isLoggedIn
