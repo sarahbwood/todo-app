@@ -8,6 +8,9 @@ import {
   MenuItem,
 } from "@mui/material";
 import { AccountCircleOutlined } from "@mui/icons-material";
+import axios from "axios";
+import Swal from "sweetalert2";
+import "sweetalert2/themes/material-ui.css";
 import LogoImage from "../assets/images/list.png";
 
 function Header(props) {
@@ -21,6 +24,29 @@ function Header(props) {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  function logoutUser() {
+    Swal.fire({
+      title: "Are you sure you want to logout?",
+      theme: "material-ui",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Logout",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.post("api/logout")
+        .then((response) => {
+          if (response.status === 200) {
+            props.setIsLoggedIn(false);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }
+    });
+  }
 
   return (
     <AppBar
@@ -67,7 +93,7 @@ function Header(props) {
                 },
               }}
             >
-              <MenuItem>Logout</MenuItem>
+              <MenuItem onClick={logoutUser}>Logout</MenuItem>
             </Menu>
           </div>
         )}

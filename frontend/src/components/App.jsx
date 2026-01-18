@@ -15,7 +15,7 @@ function App() {
 
   return (
     <StyledEngineProvider injectFirst>
-      <Header isLoggedIn={isLoggedIn} user={user} />
+      <Header isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} user={user} />
 
       <div className="content">
         {!isLoggedIn && isRegistered && (
