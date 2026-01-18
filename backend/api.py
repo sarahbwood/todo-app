@@ -2,7 +2,8 @@ import os
 import psycopg2
 from flask import Flask, request, url_for, redirect, jsonify
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, JWTManager, set_access_cookies, unset_jwt_cookies
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, JWTManager, set_access_cookies, unset_jwt_cookies, get_jwt
+from datetime import datetime, timedelta, timezone
 
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = os.environ["JWT_SECRET_KEY"]
@@ -21,6 +22,20 @@ def connect_to_db():
     )
 
     return conn
+
+@app.after_request
+def refresh_expiring_jwts(data):
+    try:
+        expiry_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        half_hour_from_now = datetime.timestamp(now + timedelta(minutes=30))
+        
+        if half_hour_from_now > expiry_timestamp:
+            access_token = create_access_token(identity=get_jwt_identity(), additional_claims={'username': get_jwt()['username']})
+            set_access_cookies(data, access_token)
+        return data
+    except (RuntimeError, KeyError):
+        return data
 
 @app.post('/api/register')
 def register_user():
