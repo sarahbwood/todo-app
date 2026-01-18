@@ -63,6 +63,10 @@ input {
   color: #ffffffde;
 }
 
+.MuiInputBase-root{
+  color: #ffffffde;
+}
+
 p {
   color: #646cff;
   font-weight: 500;
